@@ -4,11 +4,12 @@ on:
     tags:
     - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-name: Create release
+name: Create releases
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -16,12 +17,28 @@ jobs:
         uses: jurplel/install-qt-action@v2
         with:
           version: 5.9.5
-      - name: Build project # This would actually build your project, using zip for an example artifact
+      - name: Build project and start deploy
         run: |
-          qmake AllTranslate.pro
+          qmake qt_test.pro
           make
-          
-      - name: Create Release
+          make install DESTDIR=appdir
+          cp /usr/bin/qt_test ./appdir/usr/bin
+
+      - name: Create Linux Release (AppImage)
+        run: |
+          curl -Lo linuxdeployqt.AppImage "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt.AppImage
+          ./linuxdeployqt.AppImage appdir/usr/share/applications/*.desktop -appimage -qmldir=src/qml/ -exclude-libs=libdbus-1.so.3
+
+      - name: Create Windows Release
+        run: |
+          mkdir qt_test
+          cp src/Release/qt_test.exe qt_test/
+          windeployqt qt_test/qt_test.exe
+          iscc .github/win_installer.iss
+          mv .github/Output/mysetup.exe ./qt_test.exe
+
+      - name: Create Release Info
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -31,13 +48,26 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
+
+      - name: Upload Linux Release Asset
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./my-artifact.zip
-          asset_name: my-artifact.zip
+          asset_path: ./qt_test.AppImage
+          asset_name: qt_test.AppImage
           asset_content_type: application/zip
+
+      - name: Upload Win Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./qt_test.exe
+          asset_name: qt_test.exe
+          asset_content_type: application/zip
+
