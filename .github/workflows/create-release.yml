@@ -29,6 +29,8 @@ jobs:
           curl -Lo linuxdeployqt.AppImage "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
           chmod a+x linuxdeployqt.AppImage
           ./linuxdeployqt.AppImage appdir/usr/share/applications/*.desktop -appimage -qmldir=src/qml/ -exclude-libs=libdbus-1.so.3
+          mkdir outputs
+          mv ./qt_test.AppImage ./outputs/qt_test.AppImage
 
       - name: Create Windows Release
         run: |
@@ -36,7 +38,7 @@ jobs:
           cp src/Release/qt_test.exe qt_test/
           windeployqt qt_test/qt_test.exe
           iscc .github/win_installer.iss
-          mv .github/Output/mysetup.exe ./qt_test.exe
+          mv .github/Output/mysetup.exe ./outputs/qt_test.exe
 
       - name: Create Release Info
         id: create_release
@@ -49,7 +51,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Linux Release Asset
+      - name: Upload Release Assets
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
@@ -58,16 +60,5 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./qt_test.AppImage
           asset_name: qt_test.AppImage
-          asset_content_type: application/zip
-
-      - name: Upload Win Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./qt_test.exe
-          asset_name: qt_test.exe
           asset_content_type: application/zip
 
