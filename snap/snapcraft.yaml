@@ -1,4 +1,4 @@
-name: qt_test
+name: neyvan-test
 version: 0.1
 summary: qt test
 description: |
@@ -10,9 +10,9 @@ base: core 18
 
 
 apps:
-  qt_test:
-    command: desktop-launch qt_test
-    desktop: usr/share/applications/qt_test.desktop
+  neyvan-test:
+    command: desktop-launch neyvan-test
+    desktop: usr/share/applications/neyvan-test.desktop
     plugs:
         - home
         - unity7
@@ -55,13 +55,13 @@ plugs:
 parts:
    application:
      source-type: git
-     source: https://github.com/neyvan/qt-test
+     source: https://github.com/neyvan/qt-test.git
      plugin: qmake
      qt-version: qt5
      override-build: |
             snapcraftctl build
-            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/olivia.desktop
-            cp -rf ${SNAPCRAFT_PART_SRC}/qt_test.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/qt_test.desktop
+            sed -i 's|Icon=.*|Icon=${SNAP}/meta/gui/icon.png|g' ${SNAPCRAFT_PART_SRC}/neyvan-test.desktop
+            cp -rf ${SNAPCRAFT_PART_SRC}/snap/neyvan-test.desktop ${SNAPCRAFT_PART_INSTALL}/usr/share/applications/neyvan-test.desktop
      after: [desktop-qt5]
 
    snap-launcher:

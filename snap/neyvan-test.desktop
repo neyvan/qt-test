@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=0.1
+GenericName=Neyvan Test
+Name=Neyvan Test
+Type=Application
+Icon=neyvan
+Keywords=Music Player;itunes;spotify
+Exec=neyvan-test %F
+Categories=AudioVideo;Player;Qt;Audio;
+Terminal=false
