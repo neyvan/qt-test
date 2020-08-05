@@ -1,4 +1,4 @@
-name: neyvan-test
+name: neyvan-test2
 version: 0.1
 summary: qt test
 description: |
@@ -11,7 +11,7 @@ base: core 18
 
 apps:
   neyvan-test:
-    command: desktop-launch neyvan-test
+    command: desktop-launch neyvan-test2
     desktop: usr/share/applications/neyvan-test.desktop
     plugs:
         - home
