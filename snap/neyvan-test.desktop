@@ -5,6 +5,6 @@ Name=Neyvan Test
 Type=Application
 Icon=neyvan
 Keywords=Music Player;itunes;spotify
-Exec=neyvan-test %F
+Exec=neyvan-test2 %F
 Categories=AudioVideo;Player;Qt;Audio;
 Terminal=false
